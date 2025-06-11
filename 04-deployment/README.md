@@ -3,7 +3,7 @@
 2. **Model tracking**: There are a number of models from all the experimental runs. However, not all of them are selected as production candidates. We saw how we can select good candidates and manage their life cycle in *MLflow Model Registry*.
 3. **Pipeline**: We also saw, how we took the code from notebook and created pipeline so as to make the code modular, reproducible, manage dependencies and orchestrate each of the processes with help of *Prefect* workflow engine.
 
-![](/Week4/img/beforedeploy.png)
+![](/04-deployment/img/beforedeploy.png)
 
 # What is next? #
 Now that the model is registered in *MLflow Model Registry* and production ready, we need to deploy that so that we can get the prediction result for the given data to realize its value.
@@ -15,7 +15,7 @@ Webservice: We wrap the model in a web service where the model can be loaded and
 
 Streaming: Runs in producer and consumer model where the producer pushes information to event stream and the consumers listen to the stream to get updates. For example, the predicted taxi duration result is published in the event stream and consumers such as subsequent models listen to the event stream to fetch the predicted data to further do further processing.
 
-![](/Week4/img/predwebservice_v1.png)
+![](/04-deployment/img/predwebservice_v1.png)
 
 ## Deploying model as a web-service ##
 
@@ -55,9 +55,9 @@ If the prompt is too long on the screen we can set it to something short like '>
 
 First we create a script that loads the saved model, preprocesses the input data and generates prediction.
 
-[Predict script without flask](/Week4/web-service/predict_without_flask.py)  
+[Predict script without flask](/04-deployment/web-service/predict_without_flask.py)  
 
-[Test script to test predict script](/Week4/web-service/test_without_flask.py)
+[Test script to test predict script](/04-deployment/web-service/test_without_flask.py)
 
 Note: Rename the files from predict_without_flask.py to predict.py and test_without_flask.py to test.py if you are interested to test the script without flask.
 
@@ -67,9 +67,9 @@ The idea is to create a working script that can take input in original format an
 
 Now that we have the working predict.py script ready, we can build a web-service around it so that we can expose it to an HTTP endpoint.
 
-[Predict script with flask](/Week4/web_service/predict.py)
+[Predict script with flask](/04-deployment/web_service/predict.py)
 
-[Test script to test flask app](/Week4/web-service/test.py)
+[Test script to test flask app](/04-deployment/web-service/test.py)
 
 Note: Current flask set up is for the development environment. Install gunicorn and configure in order to solve the following production environment type warning.  
 
@@ -89,7 +89,7 @@ If it is needed then we can still install it in production environment, however,
 ```pipenv install --dev requests```
 
 ### Package the app to Docker ###
-1. Create [Dockerfile](/Week4/web-service/Dockerfile) with necessary content.
+1. Create [Dockerfile](/04-deployment/web-service/Dockerfile) with necessary content.
 2. Run the following command to build docker image
    ```bash
    docker build -t ride-duration-prediction-service:v1 .
@@ -127,26 +127,26 @@ Then we will explore various ways to fetch the registered model for the webservi
    
    Here the notebook where we trained a random forest regressor model, and tracked and saved the model in mlflow.
 
-   [Jupyter Notbook](/Week4/web-service-mlflow/taxi-duration-rf-training.ipynb) for training and saving Random Forest Regressor.
+   [Jupyter Notbook](/04-deployment/web-service-mlflow/taxi-duration-rf-training.ipynb) for training and saving Random Forest Regressor.
 
    You can check the experiment details and logged model artifact in mlflow UI
 
-   ![](/Week4/img/mlflowexp.png)
+   ![](/04-deployment/img/mlflowexp.png)
 
-   ![](/Week4/img/mlflowexpdetails.png)
+   ![](/04-deployment/img/mlflowexpdetails.png)
 
    Note: There are multiple ways to use the logged model. If we are using `runs/RUN_ID/model` then we run with risk of availability lest the tracking server should go down. However, if fetch the artifact directly from S3 then we are not dependent on the artifact server. Please check the predict.py script to see the changes made.
 
 ### Inference script to fetch model ###
 1. We can take the note of the RUN ID from the experiment tracker and use that in the predict script so as to deploy the webservice.
    
-   Here is the link for [predict.py](/Week4/web-service-mlflow/predict.py) script.
+   Here is the link for [predict.py](/04-deployment/web-service-mlflow/predict.py) script.
 
    Remember to install the missing packages, if any, in the virtual environment.
 
 2. In another terminal run test.py to see if we are getting the predicted result.
    
-   ![](/Week4/img/pred.png)
+   ![](/04-deployment/img/pred.png)
 
 
 **References**
@@ -188,7 +188,7 @@ We will use the same taxi duration prediction example here.
   pipenv install scikit-learn==1.0.2 flask gunicorn mlflow boto3
   ```
 * Train random forest regressor model for the fhv taxi dataset  
-  [Jupyter notebook for training model](/Week4/batch-train/fhv-taxi-duration-training.ipynb)  
+  [Jupyter notebook for training model](/04-deployment/batch-train/fhv-taxi-duration-training.ipynb)  
 
    Take a note of the full path from artifact section in mlflow ui
 
@@ -202,7 +202,7 @@ We will use the same taxi duration prediction example here.
   ```
 * Copy the training notebook and change it for prediction, say, score.ipynb. 
   
-  [score notebook](/Week4/batch-inference/score.ipynb)
+  [score notebook](/04-deployment/batch-inference/score.ipynb)
 
   Once the notebook code successfully runs convert that to python script.
   ``` cp
@@ -210,9 +210,9 @@ We will use the same taxi duration prediction example here.
   ```
 
 * Clean and parameterize the prediction script score.py  
-  [Clean code in score.py](/Week4/batch-inference/score.py)
+  [Clean code in score.py](/04-deployment/batch-inference/score.py)
 
-![](/Week4/img/scorerun.png)
+![](/04-deployment/img/scorerun.png)
 
 **Step 3: Dockerise the script [Homework]**  
 [Pending] This is yet to be completed.
